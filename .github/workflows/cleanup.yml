@@ -1,0 +1,42 @@
+name: Cleanup expired documents
+
+# Removes documents past their expires_at (CV / letter: 6 months): storage objects first, then the rows. Application
+# rows are kept (they keep cv_label). Logs counts only. Twice a week so the free-tier project also stays active
+# (Supabase pauses idle projects). Manual run: gh workflow run cleanup.yml -f dry_run=true
+on:
+  schedule:
+    - cron: "23 3 * * 1,4"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Only count expired documents, remove nothing"
+        required: false
+        type: boolean
+        default: false
+
+concurrency:
+  group: cleanup
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  cleanup:
+    name: Cleanup
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+      - name: Remove expired documents
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          DRY_RUN: ${{ inputs.dry_run }}
+        run: |
+          set -euo pipefail
+          node scripts/require-env.ts VITE_SUPABASE_URL SUPABASE_SERVICE_ROLE_KEY
+          SUPABASE_URL="$VITE_SUPABASE_URL" node scripts/cleanup-expired.ts

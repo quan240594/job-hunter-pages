@@ -1,0 +1,2 @@
+-- Intentionally empty: this is a public repository and the app is invite-only. No personal data, no fixtures.
+-- Create local test accounts through the admin-users function or the Supabase Studio instead.

@@ -1,0 +1,79 @@
+@import './ui-base.css';
+@import './ui-components.css';
+@import './ui-views.css';
+
+:root {
+  color-scheme: light dark;
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  line-height: 1.5;
+}
+body {
+  margin: 0;
+}
+.login {
+  max-width: 24rem;
+  margin: 4rem auto;
+  padding: 0 1rem;
+}
+.login form {
+  display: grid;
+  gap: 0.75rem;
+}
+.login label {
+  display: grid;
+  gap: 0.25rem;
+}
+
+/* Auth and admin screens (src/auth, src/pages/admin) */
+.auth-stack {
+  display: grid;
+  gap: 0.75rem;
+  max-width: 28rem;
+}
+.auth-stack label {
+  display: grid;
+  gap: 0.25rem;
+}
+.auth-stack p {
+  margin: 0;
+}
+.auth-stack ul {
+  margin: 0;
+  padding-left: 1.25rem;
+}
+.row-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+button.danger {
+  color: #b00020;
+  border-color: #b00020;
+}
+dialog {
+  max-width: 30rem;
+  border-radius: 0.5rem;
+}
+dialog::backdrop {
+  background: #0008;
+}
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+.users-table {
+  border-collapse: collapse;
+  width: 100%;
+}
+.users-table caption {
+  text-align: left;
+  font-weight: 600;
+  padding: 0.25rem 0;
+}
+.users-table th,
+.users-table td {
+  text-align: left;
+  padding: 0.35rem 0.5rem;
+  border-bottom: 1px solid #8884;
+}

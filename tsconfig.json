@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2023", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "jsx": "react-jsx",
+    "strict": true,
+    "noEmit": true,
+    "isolatedModules": true,
+    "verbatimModuleSyntax": true,
+    "skipLibCheck": true,
+    "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
+    "types": ["vite/client", "vitest/globals", "@testing-library/jest-dom", "node"]
+  },
+  "include": ["src", "scripts", "e2e", "playwright.config.ts", "vite.config.ts", "vitest.db.config.ts", "supabase/tests", "supabase/functions/admin-users/handler.ts", "supabase/functions/admin-users/contract.ts", "supabase/functions/admin-users/handler.test.ts"]
+}

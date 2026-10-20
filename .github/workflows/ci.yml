@@ -1,0 +1,122 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch: {}
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  NODE_VERSION: "24"
+
+# Every job starts immediately and runs in parallel; the only dependency is `sonar`, which waits for the `test` job
+# that produces its coverage report.
+jobs:
+  check:
+    name: Typecheck and lint
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - run: npm ci --no-audit --no-fund
+      - run: npm run typecheck
+      - run: npm run lint # zero warnings allowed
+
+  test:
+    name: Tests (coverage)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - run: npm ci --no-audit --no-fund
+      - run: npm run test:coverage # enforces the 100% thresholds
+      - run: scripts/fix-lcov-paths.sh
+      - uses: actions/upload-artifact@v7
+        with:
+          name: coverage
+          path: coverage/lcov.info
+          if-no-files-found: error
+          retention-days: 1
+
+  build:
+    name: Build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - run: npm ci --no-audit --no-fund
+      # Mock build needs no secrets, so it also runs for fork PRs. The real deploy build is in deploy.yml.
+      - run: npm run build:mock
+      - uses: actions/upload-artifact@v7
+        with:
+          name: web-dist-mock
+          path: dist
+          if-no-files-found: error
+          retention-days: 7
+
+  e2e:
+    name: E2E (Playwright, mock build)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - run: npm ci --no-audit --no-fund
+      # Builds the mock bundle, serves it under /job-hunter-pages/ like Pages and drives the preinstalled Google Chrome
+      # (channel 'chrome'), so no browser download is needed. No secrets: the mock build has no backend.
+      - run: npm run test:e2e
+      - uses: actions/upload-artifact@v7
+        if: failure()
+        with:
+          name: playwright-traces
+          path: test-results
+          if-no-files-found: ignore
+          retention-days: 7
+
+  sonar:
+    name: SonarCloud analysis
+    # Starts as soon as the unit-test coverage exists (no tests are re-run). Skipped for fork PRs, which get no secrets.
+    needs: [test]
+    if: github.event.pull_request.head.repo.fork != true
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          # Full history so Sonar can compute accurate blame/new-code diffs.
+          fetch-depth: 0
+      # SonarCloud's JS/TS analyzer needs a current Node LTS.
+      - uses: actions/setup-node@v7
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      - uses: actions/download-artifact@v8
+        with:
+          name: coverage
+          path: coverage
+      - uses: SonarSource/sonarqube-scan-action@v8
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          args: -Dsonar.qualitygate.wait=true

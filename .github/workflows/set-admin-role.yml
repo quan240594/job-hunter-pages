@@ -1,0 +1,37 @@
+name: Grant admin role
+
+# Bootstrap/maintenance alternative to the dashboard: gh workflow run set-admin-role.yml -f email=<address>
+# The user must already exist (see invite-user.yml). Privacy: in a public repository the inputs of a manual run and the
+# run logs are public, so the address is masked in the logs; for full privacy run the same script locally instead
+# (docs/SETUP.md).
+on:
+  workflow_dispatch:
+    inputs:
+      email:
+        description: "Email of an existing user to grant the admin role to"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  set-admin:
+    name: Grant admin role
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+      - name: Grant admin role
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          TARGET_EMAIL: ${{ inputs.email }}
+        run: |
+          set -euo pipefail
+          echo "::add-mask::$TARGET_EMAIL"
+          node scripts/require-env.ts VITE_SUPABASE_URL SUPABASE_SERVICE_ROLE_KEY
+          SUPABASE_URL="$VITE_SUPABASE_URL" node scripts/admin/set-admin-role.ts

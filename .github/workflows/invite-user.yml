@@ -1,0 +1,44 @@
+name: Invite user
+
+# Invite-by-email only: Supabase emails the invitee a link, they choose their own password (must_change_password is set).
+# No password is ever generated, stored or printed. Usage: gh workflow run invite-user.yml -f email=<address> -f role=user
+# Privacy: in a public repository the inputs of a manual run and the run logs are public, so the address is masked in
+# the logs; for full privacy run the same script locally instead (docs/SETUP.md).
+on:
+  workflow_dispatch:
+    inputs:
+      email:
+        description: "Email address to invite"
+        required: true
+        type: string
+      role:
+        description: "Role of the new user"
+        required: false
+        type: choice
+        options: [user, admin]
+        default: user
+
+permissions:
+  contents: read
+
+jobs:
+  invite:
+    name: Invite user
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+      - name: Send invitation
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          TARGET_EMAIL: ${{ inputs.email }}
+          TARGET_ROLE: ${{ inputs.role }}
+        run: |
+          set -euo pipefail
+          echo "::add-mask::$TARGET_EMAIL"
+          node scripts/require-env.ts VITE_SUPABASE_URL SUPABASE_SERVICE_ROLE_KEY
+          SUPABASE_URL="$VITE_SUPABASE_URL" node scripts/admin/invite-user.ts

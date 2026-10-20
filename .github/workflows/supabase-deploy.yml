@@ -1,0 +1,58 @@
+name: Deploy Supabase
+
+# Applies supabase/** to the linked project: migrations (db push), the admin-users Edge Function and, on manual runs
+# only, the auth config. `supabase config push` has no dry-run, so it never runs on push: review the diff of
+# supabase/config.toml first, then run: gh workflow run supabase-deploy.yml -f push_config=true
+on:
+  push:
+    branches: [main]
+    paths:
+      - "supabase/**"
+      - ".github/workflows/supabase-deploy.yml"
+  workflow_dispatch:
+    inputs:
+      push_config:
+        description: "Also run `supabase config push` (auth settings from supabase/config.toml)"
+        required: false
+        type: boolean
+        default: false
+
+concurrency:
+  group: supabase-deploy
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    name: Migrations and Edge Function
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+          cache: npm
+      # No secrets in this step: install scripts of dependencies must not see the Supabase credentials.
+      - run: npm ci --no-audit --no-fund
+      - name: Deploy migrations and Edge Function
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+          SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
+        run: |
+          set -euo pipefail
+          node scripts/require-env.ts SUPABASE_ACCESS_TOKEN SUPABASE_DB_PASSWORD SUPABASE_PROJECT_REF
+          npx supabase link --project-ref "$SUPABASE_PROJECT_REF"
+          npx supabase db push
+          npx supabase functions deploy admin-users --project-ref "$SUPABASE_PROJECT_REF"
+      - name: Push auth config (manual runs only)
+        if: github.event_name == 'workflow_dispatch' && inputs.push_config
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
+        run: |
+          set -euo pipefail
+          npx supabase config push --project-ref "$SUPABASE_PROJECT_REF"

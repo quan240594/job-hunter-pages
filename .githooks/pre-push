@@ -1,0 +1,52 @@
+#!/bin/sh
+# Enforces "always scan locally before pushing". Enable once per clone with:
+#   git config core.hooksPath .githooks
+# Bypass in a genuine emergency with: SKIP_SONAR=1 git push
+
+if [ -n "$SKIP_SONAR" ]; then
+  echo "pre-push: SKIP_SONAR set, skipping local Sonar scan" >&2
+  exit 0
+fi
+
+ROOT="$(git rev-parse --show-toplevel)" || exit 1
+cd "$ROOT" || exit 1
+
+if ! command -v sonar-scanner >/dev/null 2>&1; then
+  echo "pre-push: sonar-scanner not found on PATH (brew install sonar-scanner), aborting push." >&2
+  echo "pre-push: bypass once with SKIP_SONAR=1 git push if truly needed." >&2
+  exit 1
+fi
+
+if [ ! -f .env.sonar.local ]; then
+  echo "pre-push: no .env.sonar.local, aborting push." >&2
+  echo "pre-push: see scripts/sonar-scan.sh for one-time setup, or bypass with SKIP_SONAR=1 git push." >&2
+  exit 1
+fi
+
+# A dirty tree skews Sonar's SCM blame and misdates pre-existing issues as new.
+if [ -n "$(git status --porcelain)" ]; then
+  echo "pre-push: working tree has uncommitted changes, aborting push." >&2
+  echo "pre-push: commit everything first so Sonar's blame/new-code detection is accurate." >&2
+  exit 1
+fi
+
+echo "pre-push: typecheck + lint..."
+if ! npm run typecheck || ! npm run lint; then
+  echo "pre-push: typecheck or lint failed, aborting push." >&2
+  exit 1
+fi
+
+# Regenerate coverage so the scan reflects the code being pushed, same as CI.
+echo "pre-push: running test coverage..."
+if ! scripts/coverage.sh; then
+  echo "pre-push: tests failed or coverage below threshold, aborting push." >&2
+  exit 1
+fi
+
+echo "pre-push: running local Sonar scan..."
+if ! scripts/sonar-scan.sh; then
+  echo "pre-push: Sonar scan failed (or quality gate not OK), aborting push." >&2
+  exit 1
+fi
+
+echo "pre-push: Sonar scan complete - quality gate OK (https://sonarcloud.io/dashboard?id=quan240594_job-hunter-pages)."

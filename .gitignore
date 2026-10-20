@@ -1,0 +1,21 @@
+node_modules/
+dist/
+coverage/
+.scannerwork/
+.npm-cache/
+.tmp/
+.vite/
+test-results/
+playwright-report/
+*.tsbuildinfo
+.DS_Store
+
+# Local env files hold keys/tokens and are never committed. Only .env.example (no values) is tracked.
+.env
+.env.*
+!.env.example
+*.local
+
+# Supabase CLI local state
+supabase/.branches/
+supabase/.temp/
