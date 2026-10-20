@@ -3,6 +3,8 @@ import type { Job } from '../api';
 import { formatDate } from '../lib/format';
 import { HYBRID_LABELS, LANGUAGE_LABELS } from '../lib/labels';
 import { safeHttpUrl } from '../lib/errors';
+import { ADZUNA_SOURCE, sourceLabel } from '../lib/attribution';
+import { AdzunaCredit } from './AdzunaCredit';
 import { CategoryBadge } from './Badge';
 import { FitStars } from './FitStars';
 
@@ -30,7 +32,7 @@ export function JobFacts({ job }: Readonly<{ job: Job }>) {
       <Fact label="Fit">
         <FitStars fit={job.fit} />
       </Fact>
-      <Fact label="Source">{job.source === 'manual' ? 'Added manually' : job.source}</Fact>
+      <Fact label="Source">{job.source === ADZUNA_SOURCE ? <AdzunaCredit /> : sourceLabel(job.source)}</Fact>
       <Fact label="First seen">{formatDate(job.firstSeenAt)}</Fact>
       <Fact label="Posted">{job.postedAt === undefined ? 'Unknown' : formatDate(job.postedAt)}</Fact>
     </dl>

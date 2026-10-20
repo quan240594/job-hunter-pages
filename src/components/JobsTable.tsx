@@ -2,6 +2,8 @@ import type { Job } from '../api';
 import { CategoryBadge, StatusBadge } from './Badge';
 import { FitStars } from './FitStars';
 import { formatDate } from '../lib/format';
+import { ADZUNA_SOURCE } from '../lib/attribution';
+import { AdzunaCredit } from './AdzunaCredit';
 import { HYBRID_LABELS, LANGUAGE_LABELS } from '../lib/labels';
 
 interface JobRowProps {
@@ -57,6 +59,11 @@ export function JobsTable({ jobs, onOpen }: Readonly<{ jobs: readonly Job[]; onO
           ))}
         </tbody>
       </table>
+      {jobs.some((job) => job.source === ADZUNA_SOURCE) ? (
+        <p className="table-credit">
+          <AdzunaCredit />
+        </p>
+      ) : null}
     </div>
   );
 }

@@ -77,6 +77,18 @@ Pages demo (`build:mock`) and e2e. Log in as `alex@example.com` (role `user`) or
 with any non-empty password. It honours the contract's error codes and guards; nothing is persisted, a reload resets
 it.
 
+### Job source attribution (Adzuna)
+
+Adzuna's API terms require attribution wherever its listings are shown. Jobs whose `source` is the plain string
+`adzuna` show a hyperlinked "Jobs by Adzuna" credit (to `https://www.adzuna.nl/`, new tab, `rel="noopener noreferrer"`)
+in the job cards, the job dialog and under the Found table; every authenticated screen has a footer line "Some job
+listings are provided by Adzuna (adzuna.nl)." Jobs from `jooble` get a neutral "via Jooble" source label.
+
+The credit is text until the owner adds the official logo: the logo is not in the repository (and must not be drawn or
+invented). Put the file (at least 116x23 px) in `public/` and set `ADZUNA_LOGO_SRC` in `src/lib/attribution.ts`, e.g.
+`` `${import.meta.env.BASE_URL}adzuna-logo.png` ``; `<AdzunaCredit>` then renders it as the link image. The component
+also takes an optional `logoSrc` prop that overrides the constant.
+
 ## 3. Phasing
 
 **Phase 1 (this build)**

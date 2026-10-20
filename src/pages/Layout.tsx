@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
 import { RoleBadge } from '../components/Badge';
+import { AdzunaFooterNote } from '../components/AdzunaCredit';
 import { useAuth } from '../auth/context';
 import { errorMessage } from '../lib/errors';
 import { NAV_ITEMS } from '../routes';
@@ -58,6 +59,9 @@ export function Layout() {
       <main id="main" tabIndex={-1} ref={mainRef}>
         <Outlet />
       </main>
+      <footer className="app-footer no-print">
+        <AdzunaFooterNote />
+      </footer>
     </div>
   );
 }

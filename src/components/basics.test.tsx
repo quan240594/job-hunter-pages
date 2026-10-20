@@ -293,6 +293,14 @@ describe('JobFacts and JobLink', () => {
     expect(screen.getByText('18 Oct 2026')).toBeInTheDocument();
   });
 
+  it('credits Adzuna for Adzuna jobs and labels Jooble neutrally', () => {
+    const { rerender } = render(<JobFacts job={makeJob({ source: 'adzuna' })} />);
+    expect(screen.getByRole('link', { name: /Jobs by Adzuna/ })).toHaveAttribute('href', 'https://www.adzuna.nl/');
+    rerender(<JobFacts job={makeJob({ source: 'jooble' })} />);
+    expect(screen.queryByRole('link', { name: /Jobs by Adzuna/ })).not.toBeInTheDocument();
+    expect(screen.getByText('via Jooble')).toBeInTheDocument();
+  });
+
   it('copes with a manual job without quote or posting date', () => {
     render(<JobFacts job={makeJob({ source: 'manual', hybridQuote: undefined, fit: 0, hybrid: 'unclear', language: 'unknown' })} />);
     expect(screen.getByText('Added manually')).toBeInTheDocument();

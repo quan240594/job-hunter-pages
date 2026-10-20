@@ -169,6 +169,13 @@ describe('JobDetailDialog', () => {
 });
 
 describe('JobsTable', () => {
+  it('credits Adzuna under the table only when an Adzuna job is listed', () => {
+    const { rerender } = renderWithApi(<JobsTable jobs={[makeJob()]} onOpen={vi.fn()} />, createStubApi());
+    expect(screen.queryByRole('link', { name: /Jobs by Adzuna/ })).not.toBeInTheDocument();
+    rerender(<JobsTable jobs={[makeJob(), makeJob({ id: 'ad', source: 'adzuna' })]} onOpen={vi.fn()} />);
+    expect(screen.getAllByRole('link', { name: /Jobs by Adzuna/ })).toHaveLength(1);
+  });
+
   it('lists jobs and opens one from its title button', async () => {
     const user = userEvent.setup();
     const onOpen = vi.fn();

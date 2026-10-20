@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { ALEX_SESSION, authValue, createStubApi } from '../__fixtures__/uiFixtures';
@@ -92,6 +92,14 @@ describe('Layout', () => {
     await user.click(screen.getByRole('link', { name: 'Skip to content' }));
     expect(screen.getByRole('main')).toHaveFocus();
     expect(screen.getByRole('heading', { name: 'Found page' })).toBeInTheDocument();
+  });
+
+  it('has an Adzuna attribution footer', () => {
+    renderLayout(authValue(createStubApi()));
+    const footer = screen.getByRole('contentinfo');
+    expect(footer).toHaveTextContent('Some job listings are provided by Adzuna (adzuna.nl)');
+    expect(within(footer).getByRole('link')).toHaveAttribute('href', 'https://www.adzuna.nl/');
+    expect(footer).toHaveClass('no-print');
   });
 
   it('keeps the navigation and header out of the printout', () => {
