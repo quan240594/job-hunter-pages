@@ -83,7 +83,7 @@ export function AdminPage() {
         <h2 id="users-title">Users</h2>
         {notice !== null && <output>{notice}</output>}
         {actionError !== null && <p role="alert">{actionError}</p>}
-        {state.status === 'loading' && <p role="status">Loading users…</p>}
+        {state.status === 'loading' && <output>Loading users…</output>}
         {state.status === 'error' && (
           <div>
             <p role="alert">{state.text}</p>

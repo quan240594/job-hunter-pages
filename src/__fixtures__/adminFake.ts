@@ -28,7 +28,7 @@ export const SAM_USER: AdminUser = {
   banned: true,
 };
 
-const reject = (code: ApiErrorCode, message: string) => Promise.reject({ code, message });
+const reject = (code: ApiErrorCode, message: string) => Promise.reject(Object.assign(new Error(message), { code }));
 
 export interface FakeAdmin {
   admin: FakeAdminApi;

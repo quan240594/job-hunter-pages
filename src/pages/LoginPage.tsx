@@ -47,12 +47,12 @@ export function LoginPage() {
       <p className="muted">
         Sign in with the account you were invited with. There is no sign-up page: accounts are created by an admin.
       </p>
-      {state.status === 'loading' && <p role="status">Checking your session…</p>}
+      {state.status === 'loading' && <output>Checking your session…</output>}
       {state.status === 'error' && <p role="alert">{describeError(state.error)}</p>}
       {state.status !== 'loading' && (
         <form onSubmit={submit} aria-label="Sign in">
           <label>
-            Email
+            <span>Email</span>
             <input
               type="email"
               autoComplete="username"
@@ -63,7 +63,7 @@ export function LoginPage() {
             />
           </label>
           <label>
-            Password
+            <span>Password</span>
             <input
               type="password"
               autoComplete="current-password"

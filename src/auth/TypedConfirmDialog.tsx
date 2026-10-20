@@ -57,7 +57,9 @@ export function TypedConfirmDialog({
         <h2 id={titleId}>{title}</h2>
         <div>{description}</div>
         <label>
-          Type <strong>{phrase}</strong> to confirm
+          <span>
+            Type <strong>{phrase}</strong> to confirm
+          </span>
           <input
             ref={inputRef}
             type="text"

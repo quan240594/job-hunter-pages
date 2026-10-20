@@ -29,8 +29,8 @@ const SEARCH_COLUMNS = ['title', 'company', 'location'] as const;
  * quoted for the filter grammar, so commas, dots and parentheses in user input cannot change the query.
  */
 export function searchFilter(term: string): string {
-  const likePattern = term.replaceAll('\\', '\\\\').replaceAll('%', '\\%').replaceAll('_', '\\_');
-  const quoted = likePattern.replaceAll('\\', '\\\\').replaceAll('"', '\\"');
+  const likePattern = term.replaceAll('\\', String.raw`\\`).replaceAll('%', String.raw`\%`).replaceAll('_', String.raw`\_`);
+  const quoted = likePattern.replaceAll('\\', String.raw`\\`).replaceAll('"', String.raw`\"`);
   return SEARCH_COLUMNS.map((column) => `${column}.ilike."%${quoted}%"`).join(',');
 }
 

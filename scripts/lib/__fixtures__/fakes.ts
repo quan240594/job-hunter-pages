@@ -16,12 +16,18 @@ export function jsonResponse(status: number, body?: unknown): Response {
   return new Response(body === undefined ? null : JSON.stringify(body), { status });
 }
 
+function urlOf(input: URL | RequestInfo): string {
+  if (typeof input === 'string') return input;
+  if (input instanceof URL) return input.href;
+  return input.url;
+}
+
 export function fakeFetch(handler: Handler): { fetchFn: typeof fetch; calls: RecordedCall[] } {
   const calls: RecordedCall[] = [];
   const fetchFn = async (input: URL | RequestInfo, init?: RequestInit): Promise<Response> => {
     const raw = typeof init?.body === 'string' ? init.body : undefined;
     const call: RecordedCall = {
-      url: String(input),
+      url: urlOf(input),
       method: init?.method ?? 'GET',
       headers: { ...(init?.headers as Record<string, string> | undefined) },
       body: raw === undefined ? undefined : JSON.parse(raw),

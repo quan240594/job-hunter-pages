@@ -6,5 +6,5 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 
 report="coverage/lcov.info"
-[ -f "$report" ] || { echo "fix-lcov-paths: $report not found" >&2; exit 1; }
+[[ -f "$report" ]] || { echo "fix-lcov-paths: $report not found" >&2; exit 1; }
 ROOT="$PWD/" perl -pi -e 'BEGIN { $r = $ENV{ROOT} } s|^SF:\Q$r\E|SF:|' "$report"

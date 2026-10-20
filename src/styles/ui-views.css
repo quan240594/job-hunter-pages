@@ -386,11 +386,11 @@
 }
 
 @media print {
-  .no-print,
-  .skip-link,
-  .tabs,
-  .app-header {
-    display: none !important;
+  body .no-print,
+  body .skip-link,
+  body .tabs,
+  body .app-header {
+    display: none;
   }
 
   main {

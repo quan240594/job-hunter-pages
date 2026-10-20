@@ -40,10 +40,9 @@ function optionalDate(value: string | undefined): string | undefined {
   return text;
 }
 
-function validFit(value: number | undefined): Fit {
-  const fit = value ?? 0;
-  if (!Number.isInteger(fit) || fit < 0 || fit > 5) throw apiError('validation', 'Fit must be a whole number from 0 to 5.');
-  return fit as Fit;
+function validFit(value: number = 0): Fit {
+  if (!Number.isInteger(value) || value < 0 || value > 5) throw apiError('validation', 'Fit must be a whole number from 0 to 5.');
+  return value as Fit;
 }
 
 export function prepareManualJob(input: ManualJobInput): PreparedManualJob {

@@ -74,7 +74,7 @@ export function PasswordForm() {
   return (
     <form className="auth-stack" onSubmit={submit} noValidate>
       <label>
-        New password
+        <span>New password</span>
         <input
           ref={passwordRef}
           type="password"
@@ -100,7 +100,7 @@ export function PasswordForm() {
       </ul>
       <output>Strength: {report.strength}</output>
       <label>
-        Confirm new password
+        <span>Confirm new password</span>
         <input
           ref={confirmRef}
           type="password"

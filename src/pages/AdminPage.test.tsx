@@ -69,7 +69,7 @@ describe('AdminPage', () => {
     const gate = new Promise<void>((resolve) => (release = resolve));
     const listUsers = () => gate.then(() => fake.admin.listUsers());
     renderApp('/admin', withAdmin(createFakeApi(ADMIN).api, { ...fake.admin, listUsers }));
-    expect(await screen.findByText('Loading users…')).toHaveAttribute('role', 'status');
+    expect((await screen.findByText('Loading users…')).tagName).toBe('OUTPUT');
     release();
     expect(await screen.findByRole('table')).toBeInTheDocument();
     expect(screen.queryByText('Loading users…')).not.toBeInTheDocument();

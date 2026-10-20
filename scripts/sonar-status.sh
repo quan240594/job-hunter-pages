@@ -9,7 +9,7 @@ PROJECT_KEY="quan240594_job-hunter-pages"
 ORGANIZATION="quan240594"
 API="https://sonarcloud.io/api"
 
-if [ ! -f .env.sonar.local ]; then
+if [[ ! -f .env.sonar.local ]]; then
   echo "Missing .env.sonar.local - see the setup comment in scripts/sonar-scan.sh." >&2
   exit 1
 fi
@@ -17,13 +17,13 @@ set -a
 # shellcheck disable=SC1091
 source .env.sonar.local
 set +a
-if [ -z "${SONAR_TOKEN:-}" ]; then
+if [[ -z "${SONAR_TOKEN:-}" ]]; then
   echo "SONAR_TOKEN is not set in .env.sonar.local" >&2
   exit 1
 fi
 
 BRANCH_QUERY=""
-if [ -n "${SONAR_BRANCH:-}" ]; then
+if [[ -n "${SONAR_BRANCH:-}" ]]; then
   BRANCH_QUERY="&branch=${SONAR_BRANCH}"
 fi
 

@@ -106,7 +106,7 @@ export function CreateUserForm({ admin, onCreated }: Readonly<Props>) {
       <h2 id={`${baseId}-title`}>Create a user</h2>
       <form className="auth-stack" onSubmit={submit} noValidate>
         <label>
-          Email
+          <span>Email</span>
           <input
             type="email"
             autoComplete="off"
@@ -116,7 +116,7 @@ export function CreateUserForm({ admin, onCreated }: Readonly<Props>) {
           />
         </label>
         <label>
-          Role
+          <span>Role</span>
           <select value={role} onChange={(event) => setRole(event.target.value as Role)}>
             <option value="user">User</option>
             <option value="admin">Admin</option>
@@ -125,19 +125,19 @@ export function CreateUserForm({ admin, onCreated }: Readonly<Props>) {
         <fieldset>
           <legend>How does the person get access?</legend>
           <label>
-            <input type="radio" name={`${baseId}-mode`} checked={mode === 'password'} onChange={() => setMode('password')} />
-            Create with a temporary password (recommended)
+            <input type="radio" name={`${baseId}-mode`} checked={mode === 'password'} onChange={() => setMode('password')} />{' '}
+            <span>Create with a temporary password (recommended)</span>
           </label>
           <label>
-            <input type="radio" name={`${baseId}-mode`} checked={mode === 'invite'} onChange={() => setMode('invite')} />
-            Send invite email
+            <input type="radio" name={`${baseId}-mode`} checked={mode === 'invite'} onChange={() => setMode('invite')} />{' '}
+            <span>Send invite email</span>
           </label>
           <p className="muted">Requires custom SMTP to be configured; otherwise use a temporary password.</p>
         </fieldset>
         {mode === 'password' && (
           <>
             <label>
-              Temporary password
+              <span>Temporary password</span>
               <input
                 ref={passwordRef}
                 type="text"

@@ -62,8 +62,7 @@ function bool(row: Row, key: string): boolean {
 
 function oneOf<T extends string | number>(row: Row, key: string, allowed: readonly T[]): T {
   const value = row[key];
-  const match = allowed.find((candidate) => candidate === value);
-  return match === undefined ? malformed(key) : match;
+  return allowed.find((candidate) => candidate === value) ?? malformed(key);
 }
 
 function strArray(row: Row, key: string): string[] {

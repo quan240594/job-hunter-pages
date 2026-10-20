@@ -5,7 +5,7 @@ export const ALEX: Session = { userId: 'user-alex', email: 'alex@example.com', r
 export const ADMIN: Session = { userId: 'user-admin', email: 'admin@example.com', role: 'admin', mustChangePassword: false };
 
 const UNAVAILABLE: ApiError = { code: 'unknown', message: 'not implemented' };
-const unavailable = (): Promise<never> => Promise.reject(UNAVAILABLE);
+const unavailable = (): Promise<never> => Promise.reject(Object.assign(new Error(UNAVAILABLE.message), UNAVAILABLE));
 
 /** Every method rejects with an ApiError; tests override what they need. */
 function createUnavailableApi(): DataApi {

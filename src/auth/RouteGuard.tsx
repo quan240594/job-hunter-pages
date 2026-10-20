@@ -19,7 +19,7 @@ export function RouteGuard({ requireAdmin = false, children }: Readonly<Props>) 
   const { pathname, search } = useLocation();
   const returnState: ReturnState = { from: pathname + search };
 
-  if (state.status === 'loading') return <p role="status">Loading…</p>;
+  if (state.status === 'loading') return <output>Loading…</output>;
   if (state.status === 'error') return <p role="alert">{describeError(state.error)}</p>;
   if (state.status === 'anonymous') return <Navigate to={LOGIN_PATH} replace state={returnState} />;
 

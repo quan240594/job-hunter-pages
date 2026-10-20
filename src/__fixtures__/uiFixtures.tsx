@@ -110,7 +110,12 @@ export const STANDARD_TEMPLATES: StandardTemplate[] = [
 
 export type ApiOverrides = { [K in keyof DataApi]?: Partial<DataApi[K]> };
 
-const unstubbed = () => Promise.reject({ code: 'unknown', message: 'not stubbed' });
+/** An Error that also carries the ApiError code, so it is both a real Error and an ApiError. */
+function apiError(code: string, message: string): Error & { code: string } {
+  return Object.assign(new Error(message), { code });
+}
+
+const unstubbed = () => Promise.reject(apiError('unknown', 'not stubbed'));
 
 /** A DataApi whose every method rejects until a test provides it. Methods are vi.fn so calls can be asserted. */
 export function createStubApi(overrides: ApiOverrides = {}): DataApi {
@@ -172,4 +177,4 @@ export function renderWithApi(ui: ReactElement, api: DataApi, route = '/'): Rend
   );
 }
 
-export const rejection = (code: string, message: string) => Promise.reject({ code, message });
+export const rejection = (code: string, message: string) => Promise.reject(apiError(code, message));

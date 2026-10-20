@@ -50,10 +50,10 @@ export function createFakeSupabase() {
   function from(table: string) {
     const query: RecordedQuery = { table, ops: [] };
     queries.push(query);
-    const builder: Record<string, unknown> = {
-      then: (resolve: (value: QueryResult) => unknown, reject: (reason: unknown) => unknown) =>
-        Promise.resolve(queue.shift() ?? failure({ message: 'unexpected query', code: 'TEST' })).then(resolve, reject),
-    };
+    // A real Promise (answered on the next microtask, after the chain is recorded) that also carries the chain
+    // methods, so `await client.from(...).select()...` works without a hand-written `then`.
+    const builder = Promise.resolve().then(() => queue.shift() ?? failure({ message: 'unexpected query', code: 'TEST' })) as Promise<QueryResult> &
+      Record<string, unknown>;
     for (const name of CHAIN_METHODS) {
       builder[name] = (...args: unknown[]) => {
         query.ops.push({ name, args });

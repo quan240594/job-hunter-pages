@@ -10,7 +10,7 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
-if [ ! -f .env.sonar.local ]; then
+if [[ ! -f .env.sonar.local ]]; then
   echo "Missing .env.sonar.local - see the setup comment at the top of this script." >&2
   exit 1
 fi
@@ -20,12 +20,12 @@ set -a
 source .env.sonar.local
 set +a
 
-if [ -z "${SONAR_TOKEN:-}" ]; then
+if [[ -z "${SONAR_TOKEN:-}" ]]; then
   echo "SONAR_TOKEN is not set in .env.sonar.local" >&2
   exit 1
 fi
 
-if [ "${1:-}" = "--coverage" ]; then
+if [[ "${1:-}" = "--coverage" ]]; then
   scripts/coverage.sh
 fi
 
@@ -42,18 +42,18 @@ node_major() {
 }
 NODE_ARGS=()
 current_major="$(node_major node)"
-if [ -n "${SONAR_NODEJS_EXECUTABLE:-}" ]; then
+if [[ -n "${SONAR_NODEJS_EXECUTABLE:-}" ]]; then
   NODE_ARGS=(-Dsonar.nodejs.executable="$SONAR_NODEJS_EXECUTABLE")
-elif [ -z "$current_major" ] || [ "$current_major" -lt 22 ] || [ $((current_major % 2)) -ne 0 ]; then
+elif [[ -z "$current_major" || "$current_major" -lt 22 || $((current_major % 2)) -ne 0 ]]; then
   best="" best_major=0
   for candidate in "$HOME"/.nvm/versions/node/v*/bin/node /opt/homebrew/opt/node@*/bin/node /usr/local/opt/node@*/bin/node; do
-    [ -x "$candidate" ] || continue
+    [[ -x "$candidate" ]] || continue
     major="$(node_major "$candidate")"
-    if [ -n "$major" ] && [ "$major" -ge 22 ] && [ $((major % 2)) -eq 0 ] && [ "$major" -gt "$best_major" ]; then
+    if [[ -n "$major" && "$major" -ge 22 && $((major % 2)) -eq 0 && "$major" -gt "$best_major" ]]; then
       best="$candidate" best_major="$major"
     fi
   done
-  if [ -z "$best" ]; then
+  if [[ -z "$best" ]]; then
     echo "sonar-scan: an even-numbered Node >= 22 LTS is required for the JS/TS analyzer (found $(node -v)); set SONAR_NODEJS_EXECUTABLE." >&2
     exit 1
   fi

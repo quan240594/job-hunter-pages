@@ -25,7 +25,8 @@ export function RepeatableList<T extends { key: string }>({
     <fieldset className="repeatable">
       <legend>{legend}</legend>
       {items.map((item, position) => (
-        <div key={item.key} role="group" aria-label={`${itemLabel} ${position + 1}`} className="repeat-item">
+        <fieldset key={item.key} className="repeat-item">
+          <legend className="visually-hidden">{`${itemLabel} ${position + 1}`}</legend>
           {children(item)}
           <div>
             <button
@@ -37,7 +38,7 @@ export function RepeatableList<T extends { key: string }>({
               Remove
             </button>
           </div>
-        </div>
+        </fieldset>
       ))}
       <div>
         <button type="button" className="btn btn-small" onClick={onAdd}>
