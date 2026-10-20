@@ -77,9 +77,12 @@ token_verifications = 30
 token_refresh = 150
 
 [auth.email]
-# Sign-up is disabled, so confirmations only matter for address changes: users must prove the new address.
+# This enables the email+password PROVIDER (logins); in Supabase's config mapping it is NOT "allow new signups".
+# Public registration stays disabled by the top-level [auth] enable_signup = false (invite-only). Setting this to
+# false would make every email login fail with 422 email_provider_disabled.
+# Confirmations only matter for address changes: users must prove the new address.
 # Admin-created users are confirmed by the Edge Function (email_confirm: true) or by accepting the invite.
-enable_signup = false
+enable_signup = true
 enable_confirmations = true
 double_confirm_changes = true
 secure_password_change = true

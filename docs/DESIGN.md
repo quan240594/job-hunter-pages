@@ -37,7 +37,7 @@ Private job-hunter repo (OWNER's scraper) -- service role --> upsert jobs for th
 
 | Decision | Why |
 | --- | --- |
-| Invite-only, email + password, `enable_signup=false` | Friends & family only; no public registration surface or abuse. |
+| Invite-only, email + password, top-level `[auth] enable_signup=false` (and `[auth.email] enable_signup=true`, which is the email+password provider switch, not "allow signups") | Friends & family only; no public registration surface or abuse. |
 | Role in `app_metadata.role` (JWT) | Only the service role can write it, so it cannot be self-assigned; no extra roles table. |
 | RLS `user_id = auth.uid()` on every table; admins get **no** row access | Privacy: even the admin sees only account metadata (via the edge function), never other people's jobs or CVs. |
 | One Edge Function `admin-users` | Creating/banning/deleting auth users needs the service-role key, which must never reach the browser. It also serves `deleteSelf` for account deletion. |

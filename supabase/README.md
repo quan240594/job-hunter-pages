@@ -70,6 +70,12 @@ content_path = "./supabase/templates/confirmation.html"
 Then export the `SMTP_*` variables in the shell and run `npx supabase config push`. The `.html` files stay in
 `supabase/templates/` meanwhile.
 
+Sign-up switches (easy to confuse): top-level `[auth] enable_signup = false` is what makes the project invite-only
+(public registration off). `[auth.email] enable_signup = true` is the **email+password provider** switch in Supabase's
+config mapping; `false` there disables email logins entirely (422 `email_provider_disabled`). Keep both as in
+`config.toml`. (An earlier dry-run review wrongly read `auth.email.enable_signup: false` as "no signups"; it is the
+provider switch and must be `true`.)
+
 Password policy (`config.toml`): at least **12 characters** with lower case, upper case and digits
 (`password_requirements = "lower_upper_letters_digits"`). The function applies the length rule (12 to 72 characters) to
 admin-chosen temporary passwords and lets Auth enforce the character classes (rejected as `validation`).
